@@ -2,6 +2,7 @@
 using Discord.Commands;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using ubad.Services;
 
@@ -15,6 +16,9 @@ namespace ubad.Modules
         public XkcdService XkcdService { get; set; }
         public WebHookExampleService WebHookExampleService { get; set; }
         public JokeService JokeService { get; set; }
+        public AudioService AudioService { get; set; }
+
+        public MaidService MaidService { get; set; }
 
         //private Random randomGenerator = new Random();
 
@@ -107,5 +111,73 @@ namespace ubad.Modules
             var trimmedJoke = punchLine.Substring(sampleIndex, periodIndex);
             await ReplyAsync(trimmedJoke);
         }
+
+        [Command("connect", RunMode = RunMode.Async)]
+        public async Task JoinChannel( [Remainder] string fileName = null)
+        {
+            // Get the audio channel
+            IVoiceChannel channel = null;
+            channel ??= (Context.User as IGuildUser)?.VoiceChannel;
+            if (channel == null)
+            {
+                await Context.Channel.SendMessageAsync("User must be in a voice channel, or a voice channel must be passed as an argument.");
+                return;
+            }
+
+            // For the next step with transmitting audio, you would want to pass this Audio Client in to a service.
+            var audioClient = await channel.ConnectAsync();
+
+            await AudioService.SendAsync(audioClient, Environment.GetEnvironmentVariable("musicDirectory") + fileName);
+        }
+
+        [Command("disconnect", RunMode = RunMode.Async)]
+        public async Task JoinChannel()
+        {
+            // Get the audio channel
+            IVoiceChannel channel = null;
+            channel ??= (Context.User as IGuildUser)?.VoiceChannel;
+            if (channel == null)
+            {
+                await Context.Channel.SendMessageAsync("User must be in a voice channel, or a voice channel must be passed as an argument.");
+                return;
+            }
+
+            await channel.DisconnectAsync();
+        }
+
+        [Command("songs", RunMode = RunMode.Async)]
+        public async Task ListSongs()
+        { 
+            var files = new DirectoryInfo(Environment.GetEnvironmentVariable("musicDirectory"));
+            await ReplyAsync(string.Join(' ', files.GetFiles("*.mp3").Select(x => "\u2022 " + x.Name + "\n" ).ToList()));
+        }
+
+        [Command("getSong", RunMode = RunMode.Async)]
+        public async Task GetSong(params string[] objects)
+        {
+            await AudioService.DownloadSong(objects[0], objects[1]);
+        }
+
+        [Command("maid", RunMode = RunMode.Async)]
+        public async Task GetStory(params string[] objects)
+        {
+           if( objects[0] == "get")
+            {
+                var reply = await MaidService.GetResponseAsync();
+                await ReplyAsync(reply);
+            }
+           else if (objects[0] == "reply")
+            {
+                await MaidService.PostResponseAsync(string.Join(' ', objects[1..]));
+                await Task.Delay(new TimeSpan(0, 0, 10));
+                var reply = await MaidService.GetResponseAsync();
+                await ReplyAsync(reply);
+            }
+            else
+            {
+                await ReplyAsync("Invalid option, please spcify either \"get\" or \"reply\" ");
+            }
+        }
+
     }
 }

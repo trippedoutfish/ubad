@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ubad.Services;
@@ -25,6 +26,7 @@ namespace ubad
 
             client.Log += LogAsync;
             services.GetRequiredService<CommandService>().Log += LogAsync;
+
 
             // Tokens should be considered secret data and never hard-coded.
             // We can read from the environment variable to avoid hardcoding.
@@ -55,6 +57,8 @@ namespace ubad
                 .AddSingleton<XkcdService>()
                 .AddSingleton<WebHookExampleService>()
                 .AddSingleton<JokeService>()
+                .AddSingleton<AudioService>()
+                .AddSingleton<MaidService>()
                 .BuildServiceProvider();
         }
     }
