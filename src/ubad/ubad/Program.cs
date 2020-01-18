@@ -12,7 +12,7 @@ namespace ubad
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
             => new Program().MainAsync().GetAwaiter().GetResult();
 
         public async Task MainAsync()

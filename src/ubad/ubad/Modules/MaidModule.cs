@@ -33,11 +33,19 @@ namespace ubad.Modules
             }
         }
 
-        //[Command("activeChannel", RunMode = RunMode.Async)]
-        //public async Task GetStory(params string[] objects)
-        //{
-        // TODO: Add Ability for bot to restrict commands to live comments from people in a chat channel
-        //}
+        [Command("setChannel", RunMode = RunMode.Async)]
+        public async Task SetChannel()
+        {
+            // Get the audio channel
+            IVoiceChannel channel = null;
+            channel ??= (Context.User as IGuildUser)?.VoiceChannel;
+            if (channel == null)
+            {
+                await Context.Channel.SendMessageAsync("User must be in a voice channel, or a voice channel must be passed as an argument.");
+                return;
+            }
+            await ReplyAsync("Not Implemented yet :^)");
+        }
 
 
     }
