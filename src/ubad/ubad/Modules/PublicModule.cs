@@ -18,10 +18,6 @@ namespace ubad.Modules
         public JokeService JokeService { get; set; }
         public AudioService AudioService { get; set; }
 
-        public MaidService MaidService { get; set; }
-
-        //private Random randomGenerator = new Random();
-
         [Command("ping")]
         [Alias("pong", "hello")]
         public Task PingAsync()
@@ -157,27 +153,5 @@ namespace ubad.Modules
         {
             await AudioService.DownloadSong(objects[0], objects[1]);
         }
-
-        [Command("maid", RunMode = RunMode.Async)]
-        public async Task GetStory(params string[] objects)
-        {
-           if( objects[0] == "get")
-            {
-                var reply = await MaidService.GetResponseAsync();
-                await ReplyAsync(reply);
-            }
-           else if (objects[0] == "reply")
-            {
-                await MaidService.PostResponseAsync(string.Join(' ', objects[1..]));
-                await Task.Delay(new TimeSpan(0, 0, 10));
-                var reply = await MaidService.GetResponseAsync();
-                await ReplyAsync(reply);
-            }
-            else
-            {
-                await ReplyAsync("Invalid option, please spcify either \"get\" or \"reply\" ");
-            }
-        }
-
     }
 }
