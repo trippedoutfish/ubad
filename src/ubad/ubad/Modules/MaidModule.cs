@@ -12,24 +12,41 @@ namespace ubad.Modules
     {
         public MaidService MaidService { get; set; }
 
+        private string maxMessage { get; set; }
+        private string reply { get; set; }
+
         [Command("maid", RunMode = RunMode.Async)]
         public async Task GetStory(params string[] objects)
         {
             if (objects[0] == "get")
             {
-                var reply = await MaidService.GetResponseAsync();
-                await ReplyAsync(reply);
+                reply = await MaidService.GetResponseAsync();
             }
             else if (objects[0] == "reply")
             {
                 await MaidService.PostResponseAsync(string.Join(' ', objects[1..]));
                 await Task.Delay(new TimeSpan(0, 0, 10));
-                var reply = await MaidService.GetResponseAsync();
-                await ReplyAsync(reply);
+                reply = await MaidService.GetResponseAsync();
+                                
             }
             else
             {
                 await ReplyAsync("Invalid option, please spcify either \"get\" or \"reply\" ");
+                return;
+            }
+
+            if (reply.Length > 1999)
+            {
+                while (reply.Length > 1999)
+                {
+                    maxMessage = reply[..1999];
+                    await ReplyAsync(maxMessage);
+                    reply = reply[2000..];
+                }
+            }
+            else
+            {
+                await ReplyAsync(reply);
             }
         }
 
