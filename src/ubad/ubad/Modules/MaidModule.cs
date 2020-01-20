@@ -44,10 +44,7 @@ namespace ubad.Modules
                     reply = reply[2000..];
                 }
             }
-            else
-            {
-                await ReplyAsync(reply);
-            }
+            await ReplyAsync(reply);
         }
 
         [Command("setChannel", RunMode = RunMode.Async)]
