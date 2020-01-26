@@ -13,6 +13,7 @@ namespace ubad.Modules
     {
         // Dependency Injection will fill this value in for us
         public PictureService PictureService { get; set; }
+
         public XkcdService XkcdService { get; set; }
         public WebHookExampleService WebHookExampleService { get; set; }
         public JokeService JokeService { get; set; }
@@ -109,7 +110,7 @@ namespace ubad.Modules
         }
 
         [Command("connect", RunMode = RunMode.Async)]
-        public async Task JoinChannel( [Remainder] string fileName = null)
+        public async Task JoinChannel([Remainder] string fileName = null)
         {
             // Get the audio channel
             IVoiceChannel channel = null;
@@ -143,9 +144,9 @@ namespace ubad.Modules
 
         [Command("songs", RunMode = RunMode.Async)]
         public async Task ListSongs()
-        { 
+        {
             var files = new DirectoryInfo(Environment.GetEnvironmentVariable("musicDirectory"));
-            await ReplyAsync(string.Join(' ', files.GetFiles("*.mp3").Select(x => "\u2022 " + x.Name + "\n" ).ToList()));
+            await ReplyAsync(string.Join(' ', files.GetFiles("*.mp3").Select(x => "\u2022 " + x.Name + "\n").ToList()));
         }
 
         [Command("getSong", RunMode = RunMode.Async)]

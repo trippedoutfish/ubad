@@ -9,6 +9,7 @@ namespace ubad.Services
     {
         private readonly string webHookId = Environment.GetEnvironmentVariable("webHookId");
         private readonly string webHookToken = Environment.GetEnvironmentVariable("webHookToken");
+
         public async Task PostWebhook(string Title, string Description)
         {
             using var client = new DiscordWebhookClient($"https://discordapp.com/api/webhooks/{webHookId}/{webHookToken}");
@@ -22,7 +23,7 @@ namespace ubad.Services
             .Build();
 
             // Webhooks are able to send multiple embeds per message
-            // As such, your embeds must be passed as a collection. 
+            // As such, your embeds must be passed as a collection.
             await client.SendMessageAsync(embeds: new[] { embed.Build() });
         }
     }

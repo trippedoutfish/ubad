@@ -3,16 +3,15 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ubad.Services;
 
 namespace ubad
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
             => new Program().MainAsync().GetAwaiter().GetResult();
 
         public async Task MainAsync()
@@ -26,7 +25,6 @@ namespace ubad
 
             client.Log += LogAsync;
             services.GetRequiredService<CommandService>().Log += LogAsync;
-
 
             // Tokens should be considered secret data and never hard-coded.
             // We can read from the environment variable to avoid hardcoding.
