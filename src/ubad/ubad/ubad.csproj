@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>6e7c18e6-6303-4a6f-88b5-0a471f43962a</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -11,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.0.0" />
     <PackageReference Include="YoutubeDLSharp" Version="0.1.0" />
   </ItemGroup>
 
