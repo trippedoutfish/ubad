@@ -28,14 +28,21 @@ namespace ubad.Services
 
         internal int CountParticipants
         {
-            get => membersInStory.Count;
+            get => participantsInStory.Count;
         }
 
         internal string ListParticipants
         {
-            get => string.Join(',', membersInStory.Select(x => x.Username).ToList());
+            get
+            {
+                if(participantsInStory.Count == 0)
+                {
+                    return "There are no participants";
+                }
+                return string.Join(',', participantsInStory.Select(x => x.Username).ToList());
+            }
         }
-        private List<IGuildUser> membersInStory { get; set; }
+        private List<IGuildUser> participantsInStory { get; set; }
 
         private List<string> messages { get; set; }
 
@@ -45,7 +52,7 @@ namespace ubad.Services
             http.Timeout = new TimeSpan(0, 0, 5);
             _http = http;
 
-            membersInStory = new List<IGuildUser>();
+            participantsInStory = new List<IGuildUser>();
             currentSpeaker = 0;
             advancePaused = false;
             lastAdvancement = DateTime.UtcNow;
@@ -53,40 +60,40 @@ namespace ubad.Services
 
         public bool Contains(IGuildUser user)
         {
-            return membersInStory.Contains(user);
+            return participantsInStory.Contains(user);
         }
 
         public void Clear()
         {
-            membersInStory.Clear();
+            participantsInStory.Clear();
             currentSpeaker = 0;
         }
         public void AddParticipant(IGuildUser user)
         {
-            membersInStory.Add(user);
+            participantsInStory.Add(user);
         }
 
         public void RemoveParticipant(IGuildUser user)
         {
-            membersInStory.Remove(user);
+            participantsInStory.Remove(user);
         }
 
         public bool IsCurrentSpeaker(IGuildUser user)
         {
-            if(membersInStory.Count == 0)
+            if(participantsInStory.Count == 0)
             {
                 return false;
             }
-            return membersInStory[currentSpeaker] == user;
+            return participantsInStory[currentSpeaker] == user;
         }
 
         public string CurrentSpeaker()
         {
-            if (membersInStory.Count == 0)
+            if (participantsInStory.Count == 0)
             {
-                return "Nobody participating";
+                return "Nobody";
             }
-            return membersInStory[currentSpeaker].Mention;
+            return participantsInStory[currentSpeaker].Mention;
         }
 
         public async Task<string> GetResponseAsync()
@@ -107,7 +114,7 @@ namespace ubad.Services
 
         internal void AdvanceSpeaker()
         {
-            if(currentSpeaker + 1 >= membersInStory.Count)
+            if(currentSpeaker + 1 >= participantsInStory.Count)
             {
                 currentSpeaker = 0;
             }
@@ -131,6 +138,16 @@ namespace ubad.Services
             {
             }
             return ApiConnectionError;
+        }
+
+        internal IGuildUser FindParticipant(string userId)
+        {
+            ulong convertedId;
+            if(UInt64.TryParse(userId, out convertedId))
+            {
+                return participantsInStory.Find(x => x.Id == convertedId);
+            }
+            return null;
         }
     }
 }

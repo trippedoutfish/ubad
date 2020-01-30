@@ -91,11 +91,11 @@ namespace ubad.Modules
         //public Task GuildOnlyCommand()
         //    => ReplyAsync("Nothing to see here!");
 
-        [Command("webhook")]
-        public async Task WebHookAsync(string Title = "Default Title", string Description = "Default Description")
-        {
-            await WebHookExampleService.PostWebhook(Title, Description);
-        }
+        //[Command("webhook")]
+        //public async Task WebHookAsync(string Title = "Default Title", string Description = "Default Description")
+        //{
+        //    await WebHookExampleService.PostWebhook(Title, Description);
+        //}
 
         //[Command("joke")]
         public async Task JokeTaskAsync([Remainder] string text)

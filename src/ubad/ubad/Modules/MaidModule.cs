@@ -21,6 +21,7 @@ namespace ubad.Modules
         [Command("maid", RunMode = RunMode.Async)]
         public async Task GetStory(params string[] objects)
         {
+            
             if (objects[0] == "join")
             {
                 if (MaidService.Contains(Context.User as IGuildUser))
@@ -34,13 +35,29 @@ namespace ubad.Modules
             }
             else if (objects[0] == "leave")
             {
-                if (!MaidService.Contains(Context.User as IGuildUser))
+                if (MaidService.Contains(Context.User as IGuildUser))
                 {
                     MaidService.RemoveParticipant(Context.User as IGuildUser);
                     await ReplyAsync($"{Context.User.Username} you have been removed from the participants list.");
                     return;
                 }
                 await ReplyAsync($"{Context.User.Username} you are not participating.");
+                return;
+            }
+            else if (objects[0] == "participants")
+            {
+                await ReplyAsync(MaidService.ListParticipants);
+                return;
+            }
+            else if (objects[0] == "clear")
+            {
+                MaidService.Clear();
+                await ReplyAsync($"Participants list has been cleared!");
+                return;
+            }
+            else if (objects[0] == "speaker")
+            {
+                await ReplyAsync($"{MaidService.CurrentSpeaker()} is up!");
                 return;
             }
 
@@ -74,19 +91,17 @@ namespace ubad.Modules
                     return;
                 }
             }
-            else if (objects[0] == "participants")
+            
+            else if (objects[0] == "remove")
             {
-                await ReplyAsync(MaidService.ListParticipants);
-                return;
-            }
-            else if (objects[0] == "clear")
-            {
-                MaidService.Clear();
-                return;
-            }
-            else if (objects[0] == "speaker")
-            {
-                await ReplyAsync($"{MaidService.CurrentSpeaker()} is up!");
+                var foundParticipant = MaidService.FindParticipant(objects[1]);
+                if (foundParticipant != null)
+                {
+                    MaidService.RemoveParticipant(foundParticipant);
+                    await ReplyAsync($"{foundParticipant.Username} was removed from participants list!");
+                    return;
+                }
+                await ReplyAsync($"Error: Cannot find participant with specified id, the id may not have been in a valid format.");
                 return;
             }
             else
@@ -127,11 +142,11 @@ namespace ubad.Modules
         }
 
         [Command("mr", RunMode = RunMode.Async)]
-        public async Task PostReply(params string[] objects)
+        public async Task PostReply([Remainder] string text)
         {
             if ((MaidService.IsCurrentSpeaker(Context.User as IGuildUser) && !MaidService.advancePaused) || DateTime.UtcNow.Subtract(MaidService.lastAdvancement).TotalSeconds > 30)
             {
-                reply = await MaidService.PostResponseAsync(string.Join(' ', objects[1..]));
+                reply = await MaidService.PostResponseAsync(text);
                 await Task.Delay(new TimeSpan(0, 0, 10));
                 reply = await MaidService.GetResponseAsync();
                 if (reply != "Still Generating...")
@@ -156,7 +171,7 @@ namespace ubad.Modules
         }
 
         [Command("mg", RunMode = RunMode.Async)]
-        public async Task GetReply(params string[] objects)
+        public async Task GetReply()
         {
             if (!MaidService.Contains(Context.User as IGuildUser))
             {
