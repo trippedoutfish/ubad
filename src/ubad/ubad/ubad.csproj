@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
     <PackageReference Include="YoutubeDLSharp" Version="0.1.0" />
   </ItemGroup>
 

@@ -60,6 +60,13 @@ namespace ubad.Modules
                 await ReplyAsync($"{MaidService.CurrentSpeaker()} is up!");
                 return;
             }
+            else if (objects[0] == "get")
+            {
+                reply = await MaidService.GetResponseAsync();
+                MaidService.advancePaused = false;
+                await DisplayWholeReply();
+                return;
+            }
 
             if (!MaidService.Contains(Context.User as IGuildUser))
             {
@@ -68,26 +75,20 @@ namespace ubad.Modules
             }
 
 
-            if (objects[0] == "get")
-            {
-                reply = await MaidService.GetResponseAsync();
-                MaidService.advancePaused = false;
-                await DisplayWholeReply();
-                return;
-            }
-            else if (objects[0] == "reply")
+            if (objects[0] == "reply")
             {
                 if ((MaidService.IsCurrentSpeaker(Context.User as IGuildUser) && !MaidService.advancePaused) || DateTime.UtcNow.Subtract(MaidService.lastAdvancement).TotalSeconds > 30)
                 {
                     reply = await MaidService.PostResponseAsync(string.Join(' ', objects[1..]));
                     await Task.Delay(new TimeSpan(0, 0, 10));
                     reply = await MaidService.GetResponseAsync();
+                    await DisplayWholeReply();
                     if (reply != "Still Generating...")
                     {
                         MaidService.advancePaused = false;
                         MaidService.AdvanceSpeaker();
+                        await ReplyAsync($"{MaidService.CurrentSpeaker()}, you're up.");
                     }
-                    await DisplayWholeReply();
                     return;
                 }
             }
@@ -121,7 +122,7 @@ namespace ubad.Modules
                 {
                     maxMessage = reply[..1999];
                     await ReplyAsync(maxMessage);
-                    reply = reply[2000..];
+                    reply = reply[1999..];
                 }
             }
             await ReplyAsync(reply);
@@ -149,12 +150,14 @@ namespace ubad.Modules
                 reply = await MaidService.PostResponseAsync(text);
                 await Task.Delay(new TimeSpan(0, 0, 10));
                 reply = await MaidService.GetResponseAsync();
+                await DisplayWholeReply();
                 if (reply != "Still Generating...")
                 {
                     MaidService.advancePaused = false;
                     MaidService.AdvanceSpeaker();
+                    await ReplyAsync($"{MaidService.CurrentSpeaker()}, you're up.");
                 }
-                await DisplayWholeReply();
+                
                 return;
             }
             else
@@ -173,11 +176,6 @@ namespace ubad.Modules
         [Command("mg", RunMode = RunMode.Async)]
         public async Task GetReply()
         {
-            if (!MaidService.Contains(Context.User as IGuildUser))
-            {
-                await ReplyAsync($"{Context.User.Username} you silly goose, participate by joining the rotation with **!maid join**.");
-                return;
-            }
             reply = await MaidService.GetResponseAsync();
             MaidService.advancePaused = false;
             await DisplayWholeReply();

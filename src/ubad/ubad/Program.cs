@@ -57,6 +57,7 @@ namespace ubad
                 .AddSingleton<JokeService>()
                 .AddSingleton<AudioService>()
                 .AddSingleton<MaidService>()
+                .AddSingleton<StackUnderflowService>()
                 .BuildServiceProvider();
         }
     }

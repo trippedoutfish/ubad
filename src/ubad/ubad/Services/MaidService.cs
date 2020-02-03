@@ -15,9 +15,7 @@ namespace ubad.Services
     {
         private readonly HttpClient _http;
         private readonly static string ApiConnectionError = "MAID Api Error, likely that the MAID service is not running, please contact the MAID tier 3 helpdesk.";
-
-
-
+               
         internal int currentSpeaker { get; set; }
 
         internal bool advancePaused { get; set; }
@@ -76,6 +74,10 @@ namespace ubad.Services
         public void RemoveParticipant(IGuildUser user)
         {
             participantsInStory.Remove(user);
+            if (currentSpeaker >= participantsInStory.Count)
+            {
+                currentSpeaker = participantsInStory.Count - 1;
+            }
         }
 
         public bool IsCurrentSpeaker(IGuildUser user)
@@ -108,6 +110,7 @@ namespace ubad.Services
             }
             catch (TaskCanceledException em)
             {
+                Console.WriteLine(em);
             }
             return ApiConnectionError;
         }
@@ -136,6 +139,7 @@ namespace ubad.Services
             }
             catch (TaskCanceledException em)
             {
+                Console.WriteLine(em);
             }
             return ApiConnectionError;
         }
